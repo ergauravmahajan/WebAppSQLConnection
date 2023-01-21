@@ -4,21 +4,18 @@ using WebAppSQLConnection.Models;
 
 namespace WebAppSQLConnection.Services
 {
-    public class ProductsService
+    public class ProductsService : IProductsService
     {
-        private static string db_source = "appdbserver-gaurav.database.windows.net";
-        private static string db_user = "sqladmin";
-        private static string db_password = "password@123";
-        private static string db_database = "app-db";
+        private readonly IConfiguration _configuration;
+
+        public ProductsService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         private SqlConnection GetConnection()
         {
-            SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder();
-            sqlConnectionStringBuilder.DataSource= db_source;
-            sqlConnectionStringBuilder.UserID= db_user;
-            sqlConnectionStringBuilder.Password= db_password;
-            sqlConnectionStringBuilder.InitialCatalog= db_database;
-            return new SqlConnection(sqlConnectionStringBuilder.ConnectionString);
+            return new SqlConnection(_configuration.GetConnectionString("SqlConnectionString"));
         }
 
         public List<Products> GetProducts()
@@ -28,8 +25,8 @@ namespace WebAppSQLConnection.Services
 
             String statement = "select ProductsId,ProductName,Quantity from Products";
             sqlConnection.Open();
-            SqlCommand sqlCommand= new SqlCommand(statement, sqlConnection);
-            using (SqlDataReader  reader= sqlCommand.ExecuteReader())
+            SqlCommand sqlCommand = new SqlCommand(statement, sqlConnection);
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -41,7 +38,7 @@ namespace WebAppSQLConnection.Services
                     };
                     products.Add(products1);
                 }
-               
+
             }
 
             sqlConnection.Close();

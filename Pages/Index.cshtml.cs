@@ -9,10 +9,16 @@ namespace WebAppSQLConnection.Pages
     {
        
         public List<Products> Products;
+
+        private readonly IProductsService productsService1;
+
+        public IndexModel(IProductsService productsService)
+        {
+            productsService1 = productsService;
+        }
         public void OnGet()
         {
-            ProductsService productsService = new ProductsService();
-            Products = productsService.GetProducts();
+            Products = productsService1.GetProducts();
         }
     }
 }
